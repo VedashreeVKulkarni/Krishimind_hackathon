@@ -1,10 +1,10 @@
 """
 routers/predict.py
 POST /predict — Main prediction endpoint
-POST /chat    — AI Farmer Chatbot (RAG using Claude)
+POST /chat    — AI Farmer Chatbot (RAG using Groq - FREE)
 """
 import os
-import anthropic
+from groq import Groq
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List
@@ -144,6 +144,7 @@ class ChatResponse(BaseModel):
     state:        str
     district:     str
     context_used: str
+    model_used:   str
 
 
 # ─── Helper Functions ─────────────────────────────────────────────────────────
@@ -177,20 +178,21 @@ def build_hindi_summary(crop: str, market: str, price: float, trend: str, days: 
 
 def build_context(prediction: PredictResponse, crop: str, district: str, state: str) -> str:
     """Build the RAG context string from a prediction result."""
-    return f"""
-Current market data for {crop} in {district}, {state}:
-- Current price      : ₹{prediction.current_price_inr}/kg
-- Predicted price    : ₹{prediction.predicted_price_inr}/kg (in {prediction.days_ahead} days)
-- Price change       : {prediction.price_change_pct}%
-- Trend              : {prediction.trend} {prediction.trend_emoji}
-- Sentiment          : {prediction.sentiment_label} — {prediction.sentiment_reason}
-- Weather            : {prediction.weather_condition} — {prediction.weather_impact}
-- Advisory           : {prediction.recommendation}
-- Warehouse advisory : {prediction.warehouse_advisory}
-- Confidence         : {prediction.confidence_score}/100
-- Model accuracy     : MAPE {prediction.mape_score}%
-- Daily forecast     : {[{'date': d.date, 'price': d.predicted_price} for d in prediction.daily_forecast[:5]]}
-""".strip()
+    return (
+        f"Current market data for {crop} in {district}, {state}:\n"
+        f"- Current price      : ₹{prediction.current_price_inr}/kg\n"
+        f"- Predicted price    : ₹{prediction.predicted_price_inr}/kg (in {prediction.days_ahead} days)\n"
+        f"- Price change       : {prediction.price_change_pct}%\n"
+        f"- Trend              : {prediction.trend} {prediction.trend_emoji}\n"
+        f"- Sentiment          : {prediction.sentiment_label} — {prediction.sentiment_reason}\n"
+        f"- Weather            : {prediction.weather_condition} — {prediction.weather_impact}\n"
+        f"- Advisory           : {prediction.recommendation}\n"
+        f"- Warehouse advisory : {prediction.warehouse_advisory}\n"
+        f"- Confidence         : {prediction.confidence_score}/100\n"
+        f"- Model accuracy     : MAPE {prediction.mape_score}%\n"
+        f"- Next 5 days prices : "
+        f"{[{'date': d.date, 'price': d.predicted_price} for d in prediction.daily_forecast[:5]]}"
+    )
 
 
 # ─── MAIN PREDICT ROUTE ───────────────────────────────────────────────────────
@@ -387,49 +389,11 @@ def get_crop_mape(crop: str):
     }
 
 
-# ─── RAG CHATBOT ─────────────────────────────────────────────────────────────
+# ─── RAG CHATBOT (Groq — Free) ────────────────────────────────────────────────
 
-@router.post("/chat", response_model=ChatResponse, summary="AI Farmer Chatbot (RAG)")
-async def farmer_chat(request: ChatRequest):
-    """
-    RAG chatbot:
-      1. Retrieval  — calls /predict internally to get live market context
-      2. Generation — sends context + farmer question to Claude
-    """
-    question = request.question.strip()
-    crop     = request.crop
-    state    = request.state
-    district = request.district
+GROQ_MODEL = "llama-3.3-70b-versatile"   # Best free model on Groq
 
-    # ── Guard: empty question ─────────────────────────────────────────────────
-    if not question:
-        raise HTTPException(status_code=422, detail="question cannot be empty")
-
-    # ── Step 1: Retrieval — get live market data ───────────────────────────────
-    context = ""
-    try:
-        pred_req   = PredictRequest(
-            crop=crop, market=f"{district} APMC",
-            state=state, district=district, days_ahead=14
-        )
-        prediction = await predict_price(pred_req)
-        context    = build_context(prediction, crop, district, state)
-    except Exception as e:
-        # Soft-fail: chatbot still answers, just without live data
-        context = (
-            f"Live market data for {crop} in {district}, {state} is temporarily unavailable "
-            f"(reason: {str(e)}). Please answer based on general agricultural knowledge."
-        )
-
-    # ── Step 2: Generation — Claude ───────────────────────────────────────────
-    api_key = os.getenv("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        raise HTTPException(
-            status_code=503,
-            detail="Chatbot unavailable — ANTHROPIC_API_KEY is not configured on the server."
-        )
-
-    system_prompt = """You are KrishiMind AI — a trusted assistant for Indian farmers.
+SYSTEM_PROMPT = """You are KrishiMind AI — a trusted assistant for Indian farmers.
 
 Your job:
 - Use the market data provided to answer the farmer's question accurately.
@@ -444,41 +408,86 @@ Format:
 [Answer in 2–4 sentences]
 💡 Tip: [One actionable tip]"""
 
-    user_message = f"""Market context:
-{context}
 
-Farmer's question: {question}"""
+@router.post("/chat", response_model=ChatResponse, summary="AI Farmer Chatbot (RAG - Groq Free)")
+async def farmer_chat(request: ChatRequest):
+    """
+    RAG chatbot powered by Groq (FREE):
+      1. Retrieval  — calls /predict internally to get live market context
+      2. Generation — sends context + farmer question to Groq LLaMA 3.3 70B
+    """
+    question = request.question.strip()
+    crop     = request.crop
+    state    = request.state
+    district = request.district
+
+    # ── Guard: empty question ─────────────────────────────────────────────────
+    if not question:
+        raise HTTPException(status_code=422, detail="question cannot be empty")
+
+    # ── Step 1: Retrieval — get live market data ──────────────────────────────
+    context = ""
+    try:
+        pred_req   = PredictRequest(
+            crop=crop, market=f"{district} APMC",
+            state=state, district=district, days_ahead=14
+        )
+        prediction = await predict_price(pred_req)
+        context    = build_context(prediction, crop, district, state)
+    except Exception as e:
+        # Soft-fail: chatbot still answers using general knowledge
+        context = (
+            f"Live market data for {crop} in {district}, {state} is temporarily unavailable "
+            f"(reason: {str(e)}). Please answer based on general Indian agricultural knowledge."
+        )
+
+    # ── Step 2: Check Groq API key ────────────────────────────────────────────
+    api_key = os.getenv("GROQ_API_KEY", "")
+    if not api_key:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Chatbot unavailable — GROQ_API_KEY is not set. "
+                "Get a free key at https://console.groq.com and add "
+                "GROQ_API_KEY=your_key to your .env file."
+            )
+        )
+
+    # ── Step 3: Call Groq LLaMA ───────────────────────────────────────────────
+    user_message = f"Market context:\n{context}\n\nFarmer's question: {question}"
 
     try:
-        client  = anthropic.Anthropic(api_key=api_key)
-        message = client.messages.create(
-            model      = "claude-opus-4-5",
-            max_tokens = 400,
-            system     = system_prompt,
-            messages   = [{"role": "user", "content": user_message}]
+        client   = Groq(api_key=api_key)
+        response = client.chat.completions.create(
+            model       = GROQ_MODEL,
+            max_tokens  = 400,
+            temperature = 0.4,   # Lower = more factual, less creative
+            messages    = [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user",   "content": user_message}
+            ]
         )
-        answer = message.content[0].text.strip()
+        answer = response.choices[0].message.content.strip()
 
-    except anthropic.AuthenticationError:
-        raise HTTPException(
-            status_code=503,
-            detail="Invalid ANTHROPIC_API_KEY. Please check your server configuration."
-        )
-    except anthropic.RateLimitError:
-        raise HTTPException(
-            status_code=429,
-            detail="Claude API rate limit reached. Please try again in a moment."
-        )
-    except anthropic.APIConnectionError:
-        raise HTTPException(
-            status_code=503,
-            detail="Could not reach Claude API. Check your internet connection."
-        )
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Chatbot error: {str(e)}"
-        )
+        err = str(e).lower()
+        if "invalid_api_key" in err or "authentication" in err:
+            raise HTTPException(
+                status_code=503,
+                detail="Invalid GROQ_API_KEY. Get a free key at https://console.groq.com"
+            )
+        elif "rate_limit" in err:
+            raise HTTPException(
+                status_code=429,
+                detail="Groq rate limit hit. Free tier: 14,400 requests/day. Try again shortly."
+            )
+        elif "connection" in err:
+            raise HTTPException(
+                status_code=503,
+                detail="Cannot reach Groq API. Check your internet connection."
+            )
+        else:
+            raise HTTPException(status_code=500, detail=f"Chatbot error: {str(e)}")
 
     return ChatResponse(
         question     = question,
@@ -486,8 +495,6 @@ Farmer's question: {question}"""
         crop         = crop,
         state        = state,
         district     = district,
-        context_used = "Live LSTM prediction + weather + sentiment + warehouse data"
+        context_used = "Live LSTM prediction + weather + sentiment + warehouse data",
+        model_used   = f"Groq / {GROQ_MODEL}"
     )
-
-
-    
