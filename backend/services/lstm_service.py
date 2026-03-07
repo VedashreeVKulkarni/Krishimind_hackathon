@@ -1,61 +1,42 @@
 """
-KrishiMind — LSTM Service
-
-Acts as a bridge between FastAPI routes and the ML inference engine.
-
-Flow:
-Router → LSTMService → ml.predict_prices → trained models
-
-This file keeps backend code clean and reusable.
+backend/services/lstm_service.py
+Bridge between FastAPI routes and ML inference engine.
 """
 
 import sys
 import os
 from typing import Dict
 
-# ─────────────────────────────────────────────
-# Allow backend to import from /ml
-# ─────────────────────────────────────────────
+# -------------------------------------------------
+# PATH FIX
+# -------------------------------------------------
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(BASE_DIR)
+THIS_FILE = os.path.abspath(__file__)
+SERVICES_DIR = os.path.dirname(THIS_FILE)
+BACKEND_DIR = os.path.dirname(SERVICES_DIR)
+ROOT_DIR = os.path.dirname(BACKEND_DIR)
 
-# Import ML prediction engine
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+print(f"✅ LSTMService ROOT_DIR = {ROOT_DIR}")
+
 from ml.predict_prices import forecast_crop
 
 
 class LSTMService:
     """
-    Service wrapper for ML price prediction.
+    Wrapper service used by FastAPI routers.
     """
 
     def __init__(self):
-        print("🌾 LSTMService initialized — ML prediction engine ready")
-
-    # ─────────────────────────────────────────────
-    # PUBLIC METHOD
-    # ─────────────────────────────────────────────
+        print("🌾 LSTMService initialized")
 
     def predict(self, crop: str, market: str, days_ahead: int) -> Dict:
-        """
-        Main method called by router.
-
-        Parameters
-        ----------
-        crop : str
-        market : str
-        days_ahead : int
-
-        Returns
-        -------
-        dict
-        """
 
         try:
-            result = forecast_crop(crop, days_ahead)
 
-            today_price = result["today_price"]
-            predicted_price = result["predicted_price"]
+            result = forecast_crop(crop, days_ahead)
 
             daily_forecast = []
 
@@ -63,17 +44,23 @@ class LSTMService:
 
                 daily_forecast.append({
                     "date": result["forecast_dates"][i],
-                    "price": result["forecast_series"][i],
-                    "lower": result["lower_band"][i],
-                    "upper": result["upper_band"][i],
+                    "price": round(result["forecast_series"][i], 2),
+                    "lower": round(result["lower_band"][i], 2),
+                    "upper": round(result["upper_band"][i], 2),
                 })
 
             return {
-                "current_price": today_price,
-                "predicted_price": predicted_price,
+
+                "current_price": result["today_price"],
+
+                "predicted_price": result["predicted_price"],
+
                 "lower": result["lower_band"][-1],
+
                 "upper": result["upper_band"][-1],
+
                 "mape": 7.5,
+
                 "daily_forecast": daily_forecast,
             }
 

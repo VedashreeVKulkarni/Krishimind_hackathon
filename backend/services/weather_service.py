@@ -1,36 +1,34 @@
 """
-services/weather_service.py
+backend/services/weather_service.py
 
 Fetches weather data for Indian states.
-- Primary: calls OpenWeatherMap API (free tier)
-- Fallback: realistic mock data per state (works without API key)
+- Primary  : calls OpenWeatherMap API (free tier)
+- Fallback : realistic mock data per state (works without API key)
 """
 
 import os
 import requests
 from datetime import datetime
 
-# State → capital city for API lookup
 STATE_CAPITALS = {
-    "Maharashtra":      "Nashik",
-    "Karnataka":        "Bangalore",
-    "Uttar Pradesh":    "Lucknow",
-    "Madhya Pradesh":   "Indore",
-    "Telangana":        "Hyderabad",
-    "Punjab":           "Ludhiana",
-    "Haryana":          "Karnal",
-    "Rajasthan":        "Jaipur",
-    "Gujarat":          "Ahmedabad",
-    "Andhra Pradesh":   "Guntur",
-    "Tamil Nadu":       "Chennai",
-    "West Bengal":      "Kolkata",
+    "Maharashtra":    "Nashik",
+    "Karnataka":      "Bangalore",
+    "Uttar Pradesh":  "Lucknow",
+    "Madhya Pradesh": "Indore",
+    "Telangana":      "Hyderabad",
+    "Punjab":         "Ludhiana",
+    "Haryana":        "Karnal",
+    "Rajasthan":      "Jaipur",
+    "Gujarat":        "Ahmedabad",
+    "Andhra Pradesh": "Guntur",
+    "Tamil Nadu":     "Chennai",
+    "West Bengal":    "Kolkata",
 }
 
-# Seasonal mock weather — changes with month so it feels realistic
+
 def _mock_weather(state: str) -> dict:
     month = datetime.now().month
 
-    # March–May = hot & dry; June–Sep = monsoon; Oct–Feb = cool
     if month in [6, 7, 8, 9]:
         condition = "excess"
         desc      = "Heavy monsoon rainfall"
@@ -50,60 +48,49 @@ def _mock_weather(state: str) -> dict:
         temp      = 22
         rain      = 20
 
-    # Add some state-specific variation
     state_mod = {
-        "Tamil Nadu":   {"condition": "excess",  "impact": "Northeast monsoon active — heavy rainfall"},
-        "Rajasthan":    {"condition": "deficit",  "impact": "Arid conditions — water stress on crops"},
-        "West Bengal":  {"condition": "excess",  "impact": "High humidity — fungal disease risk for crops"},
-        "Punjab":       {"condition": "normal",   "impact": "Good rabi conditions — wheat crop healthy"},
+        "Tamil Nadu":  {"condition": "excess",  "impact": "Northeast monsoon active — heavy rainfall"},
+        "Rajasthan":   {"condition": "deficit",  "impact": "Arid conditions — water stress on crops"},
+        "West Bengal": {"condition": "excess",  "impact": "High humidity — fungal disease risk for crops"},
+        "Punjab":      {"condition": "normal",   "impact": "Good rabi conditions — wheat crop healthy"},
     }
     if state in state_mod and month not in [6, 7, 8, 9]:
         condition = state_mod[state]["condition"]
         impact    = state_mod[state]["impact"]
 
     return {
-        "state":        state,
-        "city":         STATE_CAPITALS.get(state, state),
-        "condition":    condition,
-        "description":  desc,
+        "state":         state,
+        "city":          STATE_CAPITALS.get(state, state),
+        "condition":     condition,
+        "description":   desc,
         "temperature_c": temp,
-        "rainfall_mm":  rain,
-        "impact":       impact,
-        "source":       "IMD Mock (add OPENWEATHER_API_KEY for live data)",
+        "rainfall_mm":   rain,
+        "impact":        impact,
+        "source":        "IMD Mock (add OPENWEATHER_API_KEY to .env for live data)",
     }
 
 
 class WeatherService:
     """
-    Fetches weather and maps it to crop price impact.
-
     With OPENWEATHER_API_KEY in .env → real live data
-    Without API key → realistic mock (still works perfectly for demo)
+    Without API key → realistic mock (works perfectly for demo)
     """
 
     def __init__(self):
-        self.api_key = os.getenv("5796d642cc1894cbedc97678ac2fe72f", "")
+        # ✅ FIXED: was os.getenv("5796d64...", "") — hardcoded key as variable name
+        self.api_key = os.getenv("OPENWEATHER_API_KEY", "")
 
     def get_weather(self, state: str) -> dict:
-        """
-        Returns weather data for a state with crop impact assessment.
-        """
         if self.api_key:
             try:
                 return self._fetch_live(state)
             except Exception as e:
                 print(f"⚠️ OpenWeather API error: {e} — using mock")
-
         return _mock_weather(state)
 
     def _fetch_live(self, state: str) -> dict:
-        """
-        Calls OpenWeatherMap API for real current weather.
-        Free tier: 60 calls/minute — more than enough.
-        Get free key at: https://openweathermap.org/api
-        """
         city = STATE_CAPITALS.get(state, state)
-        url  = f"https://api.openweathermap.org/data/2.5/weather"
+        url  = "https://api.openweathermap.org/data/2.5/weather"
         params = {
             "q":     f"{city},IN",
             "appid": self.api_key,
@@ -117,7 +104,6 @@ class WeatherService:
         rain_1h = data.get("rain", {}).get("1h", 0)
         desc    = data["weather"][0]["description"].capitalize()
 
-        # Map to condition
         if rain_1h > 5 or "heavy rain" in desc.lower():
             condition = "excess"
             impact    = "Heavy rainfall — crop damage and supply disruption likely"
