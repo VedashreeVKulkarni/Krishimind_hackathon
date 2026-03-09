@@ -1,43 +1,35 @@
+import axios from "axios";
+
 const BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
-const apiFetch = async (path, options = {}) => {
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-
-  try {
-
-    const res = await fetch(`${BASE}${path}`, {
-      signal: controller.signal,
-      headers: { "Content-Type": "application/json", ...options.headers },
-      ...options,
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(err.detail || `API error ${res.status}`);
-    }
-
-    return res.json();
-
-  } finally {
-    clearTimeout(timeout);
+const apiClient = axios.create({
+  baseURL: BASE,
+  timeout: 8000,
+  headers: {
+    "Content-Type": "application/json",
   }
-
-};
+});
 
 // POST /predict
-export const predictPrice = (body) =>
-  apiFetch("/predict", { method: "POST", body: JSON.stringify(body) });
+export const predictPrice = async (body) => {
+  const { data } = await apiClient.post("/predict", body);
+  return data;
+};
 
 // GET /news/{crop}
-export const fetchNewsSentiment = (crop) =>
-  apiFetch(`/news/${crop.toLowerCase()}`);
+export const fetchNewsSentiment = async (crop) => {
+  const { data } = await apiClient.get(`/news/${crop.toLowerCase()}`);
+  return data;
+};
 
 // GET /weather/{state}
-export const fetchWeather = (state) =>
-  apiFetch(`/weather/${encodeURIComponent(state)}`);
+export const fetchWeather = async (state) => {
+  const { data } = await apiClient.get(`/weather/${encodeURIComponent(state)}`);
+  return data;
+};
 
 // POST /chat
-export const sendChatMessage = (body) =>
-  apiFetch("/chat", { method: "POST", body: JSON.stringify(body) });
+export const sendChatMessage = async (body) => {
+  const { data } = await apiClient.post("/chat", body);
+  return data;
+};

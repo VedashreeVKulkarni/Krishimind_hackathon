@@ -13,6 +13,8 @@ ROOT_DIR    = os.path.dirname(BACKEND_DIR)                  # .../krishimind
 
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
 
 print(f"✅ main.py ROOT_DIR = {ROOT_DIR}")
 

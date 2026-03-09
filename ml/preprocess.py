@@ -60,7 +60,7 @@ def load_and_clean(crop):
         "Min Price": "min_price",
         "Max Price": "max_price",
         "Arrival Quantity": "arrivals_mt",
-        "Arrival Date": "date",
+        "Arrival Date": "arrival_date",
         "Price Date": "date",
     }
 

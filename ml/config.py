@@ -22,7 +22,7 @@ CONFIG = {
     "dropout_rate": 0.2,
 
     # training
-    "epochs": 250,
+    "epochs": 10,
     "batch_size": 32,
     "learning_rate": 0.005,
     "patience": 20,

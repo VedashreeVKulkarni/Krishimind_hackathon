@@ -284,10 +284,6 @@ export default function PriceSummary({ cdata, days }) {
 
   const isHold = cdata.adv === "HOLD";
 
-  // backend prices are ₹/Q → convert to ₹/kg
-  const basePriceKg = (Number(cdata.base) / 100).toFixed(2);
-  const predPriceKg = (Number(cdata.pred) / 100).toFixed(2);
-
   const basePriceQ = Math.round(Number(cdata.base));
   const predPriceQ = Math.round(Number(cdata.pred));
 
@@ -332,7 +328,7 @@ export default function PriceSummary({ cdata, days }) {
             lineHeight: 1
           }}
         >
-          ₹{basePriceKg}
+          ₹{basePriceQ}
           <span
             style={{
               fontSize: 15,
@@ -341,7 +337,7 @@ export default function PriceSummary({ cdata, days }) {
               fontWeight: 600
             }}
           >
-            /kg
+            / quintal
           </span>
         </div>
 
@@ -353,7 +349,7 @@ export default function PriceSummary({ cdata, days }) {
             fontWeight: 600
           }}
         >
-          ₹{basePriceQ}/Q · Agmarknet
+          Live from Agmarknet
         </div>
 
       </div>
@@ -394,7 +390,7 @@ export default function PriceSummary({ cdata, days }) {
             lineHeight: 1
           }}
         >
-          ₹{predPriceKg}
+          ₹{predPriceQ}
           <span
             style={{
               fontSize: 15,
@@ -403,7 +399,7 @@ export default function PriceSummary({ cdata, days }) {
               fontWeight: 600
             }}
           >
-            /kg
+            / quintal
           </span>
         </div>
 
@@ -418,15 +414,7 @@ export default function PriceSummary({ cdata, days }) {
           {cdata.pct > 0 ? "▲" : "▼"}{pctChange}% · LSTM Forecast
         </div>
 
-        <div
-          style={{
-            fontSize: 12,
-            color: G.muted,
-            marginTop: 3
-          }}
-        >
-          ₹{predPriceQ}/Q expected
-        </div>
+
 
       </div>
 
@@ -451,9 +439,8 @@ export default function PriceSummary({ cdata, days }) {
             left: 0,
             right: 0,
             height: 3,
-            background: `linear-gradient(90deg,${
-              cdata.conf >= 75 ? G.green : G.amber
-            },#2D9E58)`
+            background: `linear-gradient(90deg,${cdata.conf >= 75 ? G.green : G.amber
+              },#2D9E58)`
           }}
         />
 

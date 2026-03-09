@@ -106,7 +106,7 @@ function PriceTip({ active, payload, label }) {
           <div style={{ width: 8, height: 8, borderRadius: "50%", background: G.green }} />
           <span style={{ color: G.muted, fontSize: 10 }}>Predicted</span>
           <span style={{ fontWeight: 800, color: G.green, fontSize: 14, marginLeft: 4 }}>
-            ₹{Number(price.value).toFixed(0)}/kg
+            ₹{Number(price.value).toFixed(0)} / quintal
           </span>
         </div>
       )}
@@ -142,20 +142,20 @@ function EndDot(props) {
 }
 
 export default function PriceTrendChart({ data, base, pred, days, cropName, mandiName }) {
-  const rising  = pred >= base;
+  const rising = pred >= base;
   const lineCol = rising ? G.green : "#E05252";
   const fillCol = rising ? G.green : "#E05252";
 
   // ── Smart Y-axis domain ────────────────────────────────────────────────────
   const allVals = data.flatMap(d => [d.price, d.upper, d.lower].filter(v => v != null));
-  const minVal  = Math.min(...allVals, base, pred);
-  const maxVal  = Math.max(...allVals, base, pred);
-  const pad     = Math.max((maxVal - minVal) * 0.2, 40);
-  const yMin    = Math.floor(minVal - pad);
-  const yMax    = Math.ceil (maxVal + pad);
+  const minVal = Math.min(...allVals, base, pred);
+  const maxVal = Math.max(...allVals, base, pred);
+  const pad = Math.max((maxVal - minVal) * 0.2, 40);
+  const yMin = Math.floor(minVal - pad);
+  const yMax = Math.ceil(maxVal + pad);
 
-  const pct     = (((pred - base) / base) * 100).toFixed(1);
-  const pctCol  = rising ? G.green : "#E05252";
+  const pct = (((pred - base) / base) * 100).toFixed(1);
+  const pctCol = rising ? G.green : "#E05252";
 
   return (
     <div style={{ padding: "4px 0" }}>
@@ -187,9 +187,9 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
         {/* Legend */}
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           {[
-            { color: lineCol,   dash: false, label: "Predicted" },
-            { color: G.amber,   dash: true,  label: "Upper band" },
-            { color: "#bbb",    dash: true,  label: "Lower band" },
+            { color: lineCol, dash: false, label: "Predicted" },
+            { color: G.amber, dash: true, label: "Upper band" },
+            { color: "#bbb", dash: true, label: "Lower band" },
           ].map(x => (
             <div key={x.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <svg width="20" height="8">
@@ -209,12 +209,12 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
           <defs>
             {/* Main price fill gradient */}
             <linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor={fillCol} stopOpacity={0.22} />
+              <stop offset="0%" stopColor={fillCol} stopOpacity={0.22} />
               <stop offset="100%" stopColor={fillCol} stopOpacity={0.02} />
             </linearGradient>
             {/* Confidence band fill */}
             <linearGradient id="bandGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor={G.amber} stopOpacity={0.08} />
+              <stop offset="0%" stopColor={G.amber} stopOpacity={0.08} />
               <stop offset="100%" stopColor={G.amber} stopOpacity={0.01} />
             </linearGradient>
           </defs>
@@ -307,7 +307,7 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
           borderRadius: 8, padding: "6px 12px", fontSize: 11,
         }}>
           <span style={{ color: G.muted }}>Today  </span>
-          <span style={{ fontWeight: 700, color: G.text }}>₹{Math.round(base)}/kg</span>
+          <span style={{ fontWeight: 700, color: G.text }}>₹{Math.round(base)} / quintal</span>
         </div>
 
         <div style={{ color: G.muted, fontSize: 11 }}>→</div>
@@ -318,7 +318,7 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
           borderRadius: 8, padding: "6px 12px", fontSize: 11,
         }}>
           <span style={{ color: G.muted }}>D{days}  </span>
-          <span style={{ fontWeight: 700, color: lineCol }}>₹{Math.round(pred)}/kg</span>
+          <span style={{ fontWeight: 700, color: lineCol }}>₹{Math.round(pred)} / quintal</span>
         </div>
 
         <div style={{
