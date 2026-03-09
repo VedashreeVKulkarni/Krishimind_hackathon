@@ -90,7 +90,6 @@ def load_and_clean(crop):
 
     df = df.dropna(subset=["modal_price"])
 
-    # date parsing
     df["date"] = pd.to_datetime(
         df["date"].astype(str),
         dayfirst=True,
@@ -98,6 +97,7 @@ def load_and_clean(crop):
     )
 
     df = df.dropna(subset=["date"])
+    df = df.drop_duplicates(subset=["date"])
 
     # aggregate multiple mandis per day
     df = (
