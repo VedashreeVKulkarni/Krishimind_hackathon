@@ -2,7 +2,8 @@ import os
 import pandas as pd
 import numpy as np
 
-DATA_RAW = r"c:\Users\Monisha\Desktop\Krishimind\Krishimind\data\raw"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_RAW = os.path.join(BASE_DIR, "data", "raw")
 os.makedirs(DATA_RAW, exist_ok=True)
 
 crops = ["onion", "tomato", "potato", "rice", "wheat"]
