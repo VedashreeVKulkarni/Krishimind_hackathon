@@ -187,5 +187,4 @@ if __name__ == "__main__":
 import joblib
 
 # after training your model
-joblib.dump(model, "ml/model.pkl")
 print("Model saved successfully")
