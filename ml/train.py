@@ -184,3 +184,8 @@ def run():
 
 if __name__ == "__main__":
     run()
+import joblib
+
+# after training your model
+joblib.dump(model, "ml/model.pkl")
+print("Model saved successfully")
