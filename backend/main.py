@@ -6,6 +6,9 @@ Must be run from inside the /backend folder
 
 import sys
 import os
+import joblib
+
+model = joblib.load("ml/model.pkl")
 
 # ── Ensure ROOT is in path ────────────────────────────────────────────────────
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))   # .../krishimind/backend
