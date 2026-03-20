@@ -7,13 +7,7 @@ __pycache__/
 
 node_modules/
 
-data/processed/
 data/raw/
 backend/.env
-models/
 
-*.h5
-*.keras
-*.pkl
-*.npy
 *.csv
