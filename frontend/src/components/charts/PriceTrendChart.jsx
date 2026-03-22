@@ -1,86 +1,3 @@
-// import {
-//   ComposedChart, Area, XAxis, YAxis, CartesianGrid,
-//   Tooltip, ReferenceLine, ResponsiveContainer,
-// } from "recharts";
-// import { G } from "../../styles/theme";
-
-// function PriceTip({ active, payload, label }) {
-//   if (!active || !payload?.length) return null;
-//   return (
-//     <div style={{ background:"#fff", border:`1px solid ${G.bdr}`, borderRadius:10,
-//       padding:"8px 12px", fontSize:11, fontFamily:"'Mukta',sans-serif" }}>
-//       <div style={{ color:G.muted, fontSize:10, marginBottom:2 }}>{label}</div>
-//       <div style={{ fontWeight:700, color:G.green, fontSize:14 }}>
-//         ₹{payload[0]?.value}/kg
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default function PriceTrendChart({ data, base, pred, days, cropName, mandiName }) {
-//   const rising = pred >= base;
-//   const lineCol = rising ? G.green : G.red;
-//   return (
-//     <div>
-//       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
-//         <div>
-//           <div style={{ fontFamily:"'Playfair Display',serif", fontSize:15, fontWeight:700, color:G.text }}>
-//             {cropName} · {days}-Day Forecast · {mandiName}
-//           </div>
-//           <div style={{ fontSize:11, color:G.muted, marginTop:2 }}>LSTM prediction with confidence band</div>
-//         </div>
-//         <div style={{ display:"flex", gap:7, alignItems:"center", flexWrap:"wrap" }}>
-//           {[{c:G.green,l:"Predicted"},{c:G.amber,l:"Upper"},{c:"rgba(27,107,53,0.3)",l:"Lower"}].map(x => (
-//             <div key={x.l} style={{ display:"flex", alignItems:"center", gap:4, fontSize:9, color:G.muted }}>
-//               <div style={{ width:16, height:2.5, background:x.c, borderRadius:2 }}/>{x.l}
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-
-//       <ResponsiveContainer width="100%" height={200}>
-//         <ComposedChart data={data} margin={{ top:4, right:8, left:-16, bottom:0 }}>
-//           <defs>
-//             <linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1">
-//               <stop offset="5%"  stopColor={lineCol} stopOpacity={0.15} />
-//               <stop offset="95%" stopColor={lineCol} stopOpacity={0.01} />
-//             </linearGradient>
-//           </defs>
-//           <CartesianGrid strokeDasharray="3 3" stroke="rgba(27,107,53,0.06)" vertical={false} />
-//           <XAxis dataKey="day" tick={{ fill:G.muted, fontSize:9 }} axisLine={false} tickLine={false}
-//             interval={Math.floor(days / 6)} />
-//           <YAxis tick={{ fill:G.muted, fontSize:9 }} axisLine={false} tickLine={false}
-//             tickFormatter={v => `₹${v}`} />
-//           <Tooltip content={<PriceTip />} />
-//           <Area type="monotone" dataKey="upper" stroke={G.amber} strokeWidth={1.5}
-//             strokeDasharray="5 3" fill="rgba(184,120,10,0.04)" dot={false} />
-//           <Area type="monotone" dataKey="price" stroke={lineCol} strokeWidth={3}
-//             fill="url(#priceFill)" dot={false}
-//             activeDot={{ r:5, fill:lineCol, stroke:"#fff", strokeWidth:2 }} />
-//           <Area type="monotone" dataKey="lower" stroke="rgba(27,107,53,0.25)" strokeWidth={1}
-//             strokeDasharray="2 3" fill="#fff" dot={false} />
-//           <ReferenceLine y={base} stroke={G.amber} strokeDasharray="4 3"
-//             label={{ value:"Today", position:"right", fill:G.amber, fontSize:8 }} />
-//         </ComposedChart>
-//       </ResponsiveContainer>
-
-//       <div style={{ display:"flex", gap:7, marginTop:8, flexWrap:"wrap" }}>
-//         {[
-//           { l:"Today", v:`₹${base}/kg`,       c:G.muted  },
-//           { l:`D${days}`, v:`₹${pred}/kg`,    c:G.green  },
-//           { l:"Source", v:"LSTM + Agmarknet", c:G.muted  },
-//         ].map(s => (
-//           <div key={s.l} style={{ background:G.light, borderRadius:7, padding:"4px 10px", fontSize:10 }}>
-//             <span style={{ color:G.muted }}>{s.l}: </span>
-//             <span style={{ fontWeight:700, color:s.c }}>{s.v}</span>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-
 import {
   ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ReferenceLine, ResponsiveContainer, Legend,
@@ -106,7 +23,7 @@ function PriceTip({ active, payload, label }) {
           <div style={{ width: 8, height: 8, borderRadius: "50%", background: G.green }} />
           <span style={{ color: G.muted, fontSize: 10 }}>Predicted</span>
           <span style={{ fontWeight: 800, color: G.green, fontSize: 14, marginLeft: 4 }}>
-            ₹{Number(price.value).toFixed(0)} / quintal
+            ₹{Number(price.value).toFixed(2)} / kg
           </span>
         </div>
       )}
@@ -115,7 +32,7 @@ function PriceTip({ active, payload, label }) {
           <div style={{ width: 8, height: 2, background: G.amber, borderRadius: 2 }} />
           <span style={{ color: G.muted, fontSize: 10 }}>Upper  </span>
           <span style={{ fontWeight: 600, color: G.amber, fontSize: 12, marginLeft: 4 }}>
-            ₹{Number(upper.value).toFixed(0)}
+            ₹{Number(upper.value).toFixed(2)}
           </span>
         </div>
       )}
@@ -124,7 +41,7 @@ function PriceTip({ active, payload, label }) {
           <div style={{ width: 8, height: 2, background: "#aaa", borderRadius: 2 }} />
           <span style={{ color: G.muted, fontSize: 10 }}>Lower  </span>
           <span style={{ fontWeight: 600, color: G.muted, fontSize: 12, marginLeft: 4 }}>
-            ₹{Number(lower.value).toFixed(0)}
+            ₹{Number(lower.value).toFixed(2)}
           </span>
         </div>
       )}
@@ -150,7 +67,7 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
   const allVals = data.flatMap(d => [d.price, d.upper, d.lower].filter(v => v != null));
   const minVal = Math.min(...allVals, base, pred);
   const maxVal = Math.max(...allVals, base, pred);
-  const pad = Math.max((maxVal - minVal) * 0.2, 40);
+  const pad = Math.max((maxVal - minVal) * 0.2, 1);
   const yMin = Math.floor(minVal - pad);
   const yMax = Math.ceil(maxVal + pad);
 
@@ -188,8 +105,8 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           {[
             { color: lineCol, dash: false, label: "Predicted" },
-            { color: G.amber, dash: true, label: "Upper band" },
-            { color: "#bbb", dash: true, label: "Lower band" },
+            { color: G.amber, dash: true,  label: "Upper band" },
+            { color: "#bbb",  dash: true,  label: "Lower band" },
           ].map(x => (
             <div key={x.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <svg width="20" height="8">
@@ -207,23 +124,17 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
       <ResponsiveContainer width="100%" height={220}>
         <ComposedChart data={data} margin={{ top: 8, right: 24, left: 0, bottom: 0 }}>
           <defs>
-            {/* Main price fill gradient */}
             <linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={fillCol} stopOpacity={0.22} />
+              <stop offset="0%"   stopColor={fillCol} stopOpacity={0.22} />
               <stop offset="100%" stopColor={fillCol} stopOpacity={0.02} />
             </linearGradient>
-            {/* Confidence band fill */}
             <linearGradient id="bandGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={G.amber} stopOpacity={0.08} />
+              <stop offset="0%"   stopColor={G.amber} stopOpacity={0.08} />
               <stop offset="100%" stopColor={G.amber} stopOpacity={0.01} />
             </linearGradient>
           </defs>
 
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="rgba(27,107,53,0.07)"
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(27,107,53,0.07)" vertical={false} />
 
           <XAxis
             dataKey="day"
@@ -244,49 +155,25 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
 
           <Tooltip content={<PriceTip />} cursor={{ stroke: lineCol, strokeWidth: 1, strokeDasharray: "3 3" }} />
 
-          {/* Confidence band — upper area */}
-          <Area
-            type="monotone"
-            dataKey="upper"
-            stroke={G.amber}
-            strokeWidth={1.5}
-            strokeDasharray="5 3"
-            fill="url(#bandGrad)"
-            dot={false}
-            legendType="none"
-          />
+          <Area type="monotone" dataKey="upper"
+            stroke={G.amber} strokeWidth={1.5} strokeDasharray="5 3"
+            fill="url(#bandGrad)" dot={false} legendType="none" />
 
-          {/* Confidence band — lower area fills white to hide overlap */}
-          <Area
-            type="monotone"
-            dataKey="lower"
-            stroke="#bbb"
-            strokeWidth={1}
-            strokeDasharray="3 3"
-            fill="#fff"
-            dot={false}
-            legendType="none"
-          />
+          <Area type="monotone" dataKey="lower"
+            stroke="#bbb" strokeWidth={1} strokeDasharray="3 3"
+            fill="#fff" dot={false} legendType="none" />
 
-          {/* Main predicted price line */}
-          <Area
-            type="monotone"
-            dataKey="price"
-            stroke={lineCol}
-            strokeWidth={3}
-            fill="url(#priceGrad)"
-            dot={false}
-            activeDot={{ r: 6, fill: lineCol, stroke: "#fff", strokeWidth: 2.5 }}
-          />
+          <Area type="monotone" dataKey="price"
+            stroke={lineCol} strokeWidth={3} fill="url(#priceGrad)"
+            dot={false} activeDot={{ r: 6, fill: lineCol, stroke: "#fff", strokeWidth: 2.5 }} />
 
-          {/* Today reference line */}
           <ReferenceLine
             y={base}
             stroke={G.amber}
             strokeDasharray="5 3"
             strokeWidth={1.5}
             label={{
-              value: `Today ₹${Math.round(base)}`,
+              value: `Today ₹${base.toFixed(2)}/kg`,
               position: "insideTopRight",
               fill: G.amber,
               fontSize: 9,
@@ -307,7 +194,7 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
           borderRadius: 8, padding: "6px 12px", fontSize: 11,
         }}>
           <span style={{ color: G.muted }}>Today  </span>
-          <span style={{ fontWeight: 700, color: G.text }}>₹{Math.round(base)} / quintal</span>
+          <span style={{ fontWeight: 700, color: G.text }}>₹{base.toFixed(2)} / kg</span>
         </div>
 
         <div style={{ color: G.muted, fontSize: 11 }}>→</div>
@@ -318,7 +205,7 @@ export default function PriceTrendChart({ data, base, pred, days, cropName, mand
           borderRadius: 8, padding: "6px 12px", fontSize: 11,
         }}>
           <span style={{ color: G.muted }}>D{days}  </span>
-          <span style={{ fontWeight: 700, color: lineCol }}>₹{Math.round(pred)} / quintal</span>
+          <span style={{ fontWeight: 700, color: lineCol }}>₹{pred.toFixed(2)} / kg</span>
         </div>
 
         <div style={{

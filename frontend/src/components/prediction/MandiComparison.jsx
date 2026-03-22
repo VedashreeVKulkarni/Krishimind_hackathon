@@ -9,7 +9,7 @@ export default function MandiComparison({ barData, bestMandi }) {
       <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 11 }}>
         <div style={cardStyle()}>
           <div style={{ fontSize: 14, fontWeight: 700, color: G.text, marginBottom: 9 }}>
-            Today vs Predicted (₹/Q)
+            Today vs Predicted (₹/kg)
           </div>
           <MandiBarChart data={barData} />
         </div>

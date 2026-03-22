@@ -2,6 +2,7 @@
 
 /**
  * generateForecast — mock fallback used when backend is unreachable.
+ * base and pred are already in ₹/kg (from cropData.js)
  */
 export const generateForecast = (base, pred, days) =>
   Array.from({ length: days }, (_, i) => ({
@@ -13,22 +14,23 @@ export const generateForecast = (base, pred, days) =>
 
 /**
  * generateMandiBarData — mock fallback for mandi comparison chart.
+ * base and pred are already in ₹/kg
  */
 export const generateMandiBarData = (mandiNames, base, pred) =>
   mandiNames.slice(0, 4).map((name, i) => ({
     name:      name.split(" ")[0],
-    today:     Math.round(base - i * 40),
-    predicted: Math.round(pred - i * 50),
+    today:     +(base - i * 0.4).toFixed(2),
+    predicted: +(pred - i * 0.5).toFixed(2),
   }));
 
 /**
  * transformApiForecasts — converts real API daily_forecast into chart format.
- * Used when backend responds successfully.
+ * API returns ₹/quintal so divide by 100 to get ₹/kg.
  */
 export const transformApiForecasts = (dailyForecast) =>
   dailyForecast.map((d, i) => ({
     day:   i === 0 ? "Now" : `D${i + 1}`,
-    price: d.predicted_price,
-    upper: d.upper_bound,
-    lower: d.lower_bound,
+    price: +(d.predicted_price / 100).toFixed(2),
+    upper: +(d.upper_bound     / 100).toFixed(2),
+    lower: +(d.lower_bound     / 100).toFixed(2),
   }));
