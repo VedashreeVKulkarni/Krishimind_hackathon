@@ -9,5 +9,3 @@ node_modules/
 
 data/raw/
 backend/.env
-
-*.csv
