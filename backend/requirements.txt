@@ -10,5 +10,4 @@ requests==2.31.0
 httpx==0.27.0
 python-dotenv==1.0.1
 groq==0.11.0
-pickle5==0.0.12
 h5py==3.11.0
