@@ -14,7 +14,6 @@ export const generateForecast = (base, pred, days) =>
 
 /**
  * generateMandiBarData — mock fallback for mandi comparison chart.
- * base and pred are already in ₹/kg
  */
 export const generateMandiBarData = (mandiNames, base, pred) =>
   mandiNames.slice(0, 4).map((name, i) => ({
@@ -24,13 +23,12 @@ export const generateMandiBarData = (mandiNames, base, pred) =>
   }));
 
 /**
- * transformApiForecasts — converts real API daily_forecast into chart format.
- * API returns ₹/quintal so divide by 100 to get ₹/kg.
+ * transformApiForecasts — API already returns ₹/kg, no conversion needed.
  */
 export const transformApiForecasts = (dailyForecast) =>
   dailyForecast.map((d, i) => ({
     day:   i === 0 ? "Now" : `D${i + 1}`,
-    price: +(d.predicted_price / 100).toFixed(2),
-    upper: +(d.upper_bound     / 100).toFixed(2),
-    lower: +(d.lower_bound     / 100).toFixed(2),
+    price: +Number(d.predicted_price).toFixed(2),
+    upper: +Number(d.upper_bound).toFixed(2),
+    lower: +Number(d.lower_bound).toFixed(2),
   }));

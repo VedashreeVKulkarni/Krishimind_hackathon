@@ -19,139 +19,99 @@ import SectionTitle from "../components/layout/SectionTitle";
 import PriceTrendChart from "../components/charts/PriceTrendChart";
 import Card from "../components/common/Card";
 
-// ── Static government warehouse data by state ──────────────────────────────────
 const GOVT_WAREHOUSES = {
   "Maharashtra": {
     name: "NAFED / Maharashtra State Warehousing Corporation",
     address: "Plot No. 5, APMC Yard, Lasalgaon, Nashik District, Maharashtra – 422306",
-    phone: "02556-274100",
-    helpline: "1800-270-0224",
-    cost: "₹1–2/kg/month",
-    loan: "Up to 75% of crop value (Kisan Credit Card)",
-    distance: "~2 km from Lasalgaon APMC",
-    scheme: "PM Kisan Bhandaran Yojana",
+    phone: "02556-274100", helpline: "1800-270-0224",
+    cost: "₹1–2/kg/month", loan: "Up to 75% of crop value (Kisan Credit Card)",
+    distance: "~2 km from Lasalgaon APMC", scheme: "PM Kisan Bhandaran Yojana",
   },
   "Karnataka": {
     name: "Karnataka State Warehousing Corporation (KSWC)",
     address: "No. 14, Race Course Road, Bengaluru, Karnataka – 560001",
-    phone: "080-22371355",
-    helpline: "1800-425-8889",
-    cost: "₹1.5–2.5/kg/month",
-    loan: "Up to 75% of crop value (NWR-based loan)",
-    distance: "Available in all district HQs",
-    scheme: "Warehousing Development & Regulatory Authority (WDRA)",
+    phone: "080-22371355", helpline: "1800-425-8889",
+    cost: "₹1.5–2.5/kg/month", loan: "Up to 75% of crop value (NWR-based loan)",
+    distance: "Available in all district HQs", scheme: "Warehousing Development & Regulatory Authority (WDRA)",
   },
   "Uttar Pradesh": {
     name: "UP State Warehousing Corporation (UPSWC)",
     address: "Mandi Parishad Building, Vibhuti Khand, Gomti Nagar, Lucknow – 226010",
-    phone: "0522-2721614",
-    helpline: "1800-180-1551",
-    cost: "₹1–1.5/kg/month",
-    loan: "Up to 70% of crop value (via cooperative banks)",
-    distance: "Available in all 75 districts",
-    scheme: "e-NWR (Electronic Negotiable Warehouse Receipt)",
+    phone: "0522-2721614", helpline: "1800-180-1551",
+    cost: "₹1–1.5/kg/month", loan: "Up to 70% of crop value (via cooperative banks)",
+    distance: "Available in all 75 districts", scheme: "e-NWR (Electronic Negotiable Warehouse Receipt)",
   },
   "Madhya Pradesh": {
     name: "MP State Warehousing Corporation (MPSWC)",
     address: "Mandi Board Campus, E-5, Arera Colony, Bhopal – 462016",
-    phone: "0755-2460220",
-    helpline: "1800-180-1234",
-    cost: "₹1–2/kg/month",
-    loan: "Up to 75% via MP Cooperative Bank",
-    distance: "Available across all 52 districts",
-    scheme: "Bhavantar Bhugtan Yojana + NWR",
+    phone: "0755-2460220", helpline: "1800-180-1234",
+    cost: "₹1–2/kg/month", loan: "Up to 75% via MP Cooperative Bank",
+    distance: "Available across all 52 districts", scheme: "Bhavantar Bhugtan Yojana + NWR",
   },
   "Telangana": {
     name: "Telangana State Warehousing Corporation (TSWC)",
     address: "H.No. 1-8-303, Chiran Fort Lane, Begumpet, Hyderabad – 500016",
-    phone: "040-27765071",
-    helpline: "1800-599-4322",
-    cost: "₹1.5–2/kg/month",
-    loan: "Up to 75% (Rythu Bandhu + NWR)",
-    distance: "Available in all 33 districts",
-    scheme: "Rythu Bandhu Scheme + WDRA",
+    phone: "040-27765071", helpline: "1800-599-4322",
+    cost: "₹1.5–2/kg/month", loan: "Up to 75% (Rythu Bandhu + NWR)",
+    distance: "Available in all 33 districts", scheme: "Rythu Bandhu Scheme + WDRA",
   },
   "Punjab": {
     name: "Punjab State Warehousing Corporation (PSWC)",
     address: "Plot No. 3, Sector 19-B, Madhya Marg, Chandigarh – 160019",
-    phone: "0172-2741300",
-    helpline: "1800-180-2525",
-    cost: "₹0.80–1.5/kg/month",
-    loan: "Up to 80% (Punjab & Sind Bank / SBI)",
-    distance: "Available in all 23 districts",
-    scheme: "PM Fasal Bima + NWR Pledge",
+    phone: "0172-2741300", helpline: "1800-180-2525",
+    cost: "₹0.80–1.5/kg/month", loan: "Up to 80% (Punjab & Sind Bank / SBI)",
+    distance: "Available in all 23 districts", scheme: "PM Fasal Bima + NWR Pledge",
   },
   "Haryana": {
     name: "Haryana Warehousing Corporation (HWC)",
     address: "Bay No. 7-8, Sector 2, Panchkula, Haryana – 134109",
-    phone: "0172-2585111",
-    helpline: "1800-180-2060",
-    cost: "₹1–1.8/kg/month",
-    loan: "Up to 75% via HAFED / Cooperative Bank",
-    distance: "Available in all 22 districts",
-    scheme: "e-NWR + Bhavantar Scheme",
+    phone: "0172-2585111", helpline: "1800-180-2060",
+    cost: "₹1–1.8/kg/month", loan: "Up to 75% via HAFED / Cooperative Bank",
+    distance: "Available in all 22 districts", scheme: "e-NWR + Bhavantar Scheme",
   },
   "Rajasthan": {
     name: "Rajasthan State Warehousing Corporation (RSWC)",
     address: "Janpath, Near SMS Hospital, Jaipur, Rajasthan – 302001",
-    phone: "0141-2740843",
-    helpline: "1800-180-6127",
-    cost: "₹1–2/kg/month",
-    loan: "Up to 70% (NABARD / Cooperative Bank)",
-    distance: "Present in all 33 districts",
-    scheme: "WDRA Registered Warehouse + NWR",
+    phone: "0141-2740843", helpline: "1800-180-6127",
+    cost: "₹1–2/kg/month", loan: "Up to 70% (NABARD / Cooperative Bank)",
+    distance: "Present in all 33 districts", scheme: "WDRA Registered Warehouse + NWR",
   },
   "Gujarat": {
     name: "Gujarat State Warehousing Corporation (GSWC)",
     address: "Block No. 2, Udyog Bhavan, Sector 11, Gandhinagar – 382017",
-    phone: "079-23257601",
-    helpline: "1800-233-5500",
-    cost: "₹1.5–2.5/kg/month",
-    loan: "Up to 75% (Gujarat Cooperative Bank + NWR)",
-    distance: "Available in all 33 districts",
-    scheme: "PM Kisan Bhandaran + APMC Storage",
+    phone: "079-23257601", helpline: "1800-233-5500",
+    cost: "₹1.5–2.5/kg/month", loan: "Up to 75% (Gujarat Cooperative Bank + NWR)",
+    distance: "Available in all 33 districts", scheme: "PM Kisan Bhandaran + APMC Storage",
   },
   "Andhra Pradesh": {
     name: "AP State Warehousing Corporation (APSWC)",
     address: "D.No. 26-4-13, M.G. Road, Vijayawada, Andhra Pradesh – 520002",
-    phone: "0866-2577511",
-    helpline: "1800-425-0082",
-    cost: "₹1–2/kg/month",
-    loan: "Up to 75% via AP Grameena Vikas Bank",
-    distance: "Available in all 13 districts",
-    scheme: "YSR Rythu Bharosa + NWR",
+    phone: "0866-2577511", helpline: "1800-425-0082",
+    cost: "₹1–2/kg/month", loan: "Up to 75% via AP Grameena Vikas Bank",
+    distance: "Available in all 13 districts", scheme: "YSR Rythu Bharosa + NWR",
   },
   "Tamil Nadu": {
     name: "Tamil Nadu Warehousing Corporation (TNWC)",
     address: "No. 3, Thiyagaraya Road, T. Nagar, Chennai – 600017",
-    phone: "044-24316757",
-    helpline: "1800-425-6000",
-    cost: "₹1.5–2.5/kg/month",
-    loan: "Up to 70% (Tamil Nadu Cooperative Bank)",
-    distance: "Present in all 38 districts",
-    scheme: "WDRA + Uzhavar Sandhai Storage",
+    phone: "044-24316757", helpline: "1800-425-6000",
+    cost: "₹1.5–2.5/kg/month", loan: "Up to 70% (Tamil Nadu Cooperative Bank)",
+    distance: "Present in all 38 districts", scheme: "WDRA + Uzhavar Sandhai Storage",
   },
   "West Bengal": {
     name: "West Bengal State Warehousing Corporation (WBSWC)",
     address: "Brabourne Road, 2nd Floor, Kolkata, West Bengal – 700001",
-    phone: "033-22312185",
-    helpline: "1800-345-5505",
-    cost: "₹1–2/kg/month",
-    loan: "Up to 70% (West Bengal Cooperative Bank + NWR)",
-    distance: "Available in all 23 districts",
-    scheme: "Krishak Bandhu + NWR Pledge",
+    phone: "033-22312185", helpline: "1800-345-5505",
+    cost: "₹1–2/kg/month", loan: "Up to 70% (West Bengal Cooperative Bank + NWR)",
+    distance: "Available in all 23 districts", scheme: "Krishak Bandhu + NWR Pledge",
   },
 };
 
 const DEFAULT_WAREHOUSE = {
   name: "Central Warehousing Corporation (CWC)",
   address: "4/1, Siri Institutional Area, August Kranti Marg, New Delhi – 110016",
-  phone: "011-26863206",
-  helpline: "1800-200-1234",
-  cost: "₹1–2.5/kg/month",
-  loan: "Up to 75% of crop value (NWR-based loan from any bank)",
-  distance: "Available nationwide — contact for nearest branch",
-  scheme: "WDRA Registered + e-NWR",
+  phone: "011-26863206", helpline: "1800-200-1234",
+  cost: "₹1–2.5/kg/month", loan: "Up to 75% of crop value (NWR-based loan from any bank)",
+  distance: "Available nationwide — contact for nearest branch", scheme: "WDRA Registered + e-NWR",
 };
 
 const getWarehouse = (state, apiWh) => {
@@ -165,17 +125,15 @@ const getDistrict = (mandiName, state) => {
   return found?.district || mandiName.split(" ")[0];
 };
 
-// ── Translations ───────────────────────────────────────────────────────────────
 const CROP_HI = { onion: "प्याज", tomato: "टमाटर", potato: "आलू", wheat: "गेहूं", rice: "चावल" };
 const CROP_KN = { onion: "ಈರುಳ್ಳಿ", tomato: "ಟೊಮೇಟೊ", potato: "ಆಲೂಗಡ್ಡೆ", wheat: "ಗೋಧಿ", rice: "ಅಕ್ಕಿ" };
 
-// ── ALL prices shown in ₹/kg (divide raw API quintal values by 100) ────────────
+// API already returns ₹/kg — no division needed
 const buildExplanation = (d, lang) => {
   if (!d) return null;
-  const crop = d.crop;
-  // ✅ divide by 100 to convert ₹/quintal → ₹/kg
-  const price   = (d.predicted_price_inr / 100).toFixed(2);
-  const current = (d.current_price_inr   / 100).toFixed(2);
+  const crop    = d.crop;
+  const price   = Number(d.predicted_price_inr).toFixed(2);
+  const current = Number(d.current_price_inr).toFixed(2);
   const pct     = Math.abs(d.price_change_pct).toFixed(1);
   const days    = d.days_ahead;
   const action  = d.advisory_action;
@@ -247,11 +205,11 @@ export default function PredictionTab({ profile, activeCrop }) {
 
   const barData = result ? generateMandiBarData(myMandis, cdata.base, cdata.pred) : [];
 
-  // ✅ Convert ₹/quintal → ₹/kg by dividing base and pred by 100
+  // API already returns ₹/kg — use values directly, no division
   const displayData = apiData
     ? {
-        base: +(apiData.current_price_inr   / 100).toFixed(2),
-        pred: +(apiData.predicted_price_inr / 100).toFixed(2),
+        base: +Number(apiData.current_price_inr).toFixed(2),
+        pred: +Number(apiData.predicted_price_inr).toFixed(2),
         conf: apiData.confidence_score,
         pct:  apiData.price_change_pct,
         adv:  apiData.advisory_action,
@@ -319,89 +277,55 @@ export default function PredictionTab({ profile, activeCrop }) {
             </Card>
           </div>
 
-          {/* ══ AI ADVISORY ══ */}
           {apiData && (
             <div className="fu s3" style={{
               background: aStyle.bg, border: `1.5px solid ${aStyle.border}`,
               borderRadius: 16, overflow: "hidden",
             }}>
-              {/* Header */}
               <div style={{
                 padding: "10px 18px", background: aStyle.border,
                 display: "flex", alignItems: "center", justifyContent: "space-between"
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: 18 }}>🤖</span>
-                  <span style={{
-                    fontSize: 11, fontWeight: 800, letterSpacing: "0.15em",
-                    textTransform: "uppercase", color: aStyle.color
-                  }}>AI Advisory</span>
+                  <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: aStyle.color }}>AI Advisory</span>
                 </div>
-                <span style={{
-                  background: aStyle.color, color: "#fff", borderRadius: 20,
-                  padding: "3px 16px", fontSize: 12, fontWeight: 800
-                }}>
+                <span style={{ background: aStyle.color, color: "#fff", borderRadius: 20, padding: "3px 16px", fontSize: 12, fontWeight: 800 }}>
                   {aStyle.icon} {aLabel}
                 </span>
               </div>
 
-              {/* Explanation */}
               <div style={{ padding: "16px 18px 12px" }}>
                 <p style={{ fontSize: 14, color: G.text, lineHeight: 1.85, margin: 0 }}>
                   {buildExplanation(apiData, lang)}
                 </p>
               </div>
 
-              {/* ── Government Warehouse — always shown on HOLD ── */}
               {action === "HOLD" && (
-                <div style={{
-                  margin: "4px 16px 16px", borderRadius: 14, overflow: "hidden",
-                  border: `1.5px solid ${G.bdr}`, background: "#fff"
-                }}>
-                  <div style={{
-                    background: `linear-gradient(135deg,${G.deep},${G.green})`,
-                    padding: "10px 16px", display: "flex", alignItems: "center", gap: 10
-                  }}>
+                <div style={{ margin: "4px 16px 16px", borderRadius: 14, overflow: "hidden", border: `1.5px solid ${G.bdr}`, background: "#fff" }}>
+                  <div style={{ background: `linear-gradient(135deg,${G.deep},${G.green})`, padding: "10px 16px", display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontSize: 20 }}>🏛️</span>
                     <div>
-                      <div style={{
-                        fontSize: 11, fontWeight: 800, color: "#fff",
-                        textTransform: "uppercase", letterSpacing: "0.12em"
-                      }}>{tx("whTitle")}</div>
-                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", marginTop: 2 }}>
-                        {wh.scheme}
-                      </div>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#fff", textTransform: "uppercase", letterSpacing: "0.12em" }}>{tx("whTitle")}</div>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.75)", marginTop: 2 }}>{wh.scheme}</div>
                     </div>
-                    <div style={{
-                      marginLeft: "auto", background: "rgba(255,255,255,0.18)",
-                      borderRadius: 20, padding: "3px 12px", fontSize: 10, color: "#fff", fontWeight: 700
-                    }}>{wh.distance}</div>
+                    <div style={{ marginLeft: "auto", background: "rgba(255,255,255,0.18)", borderRadius: 20, padding: "3px 12px", fontSize: 10, color: "#fff", fontWeight: 700 }}>{wh.distance}</div>
                   </div>
-
                   <div style={{ padding: "12px 16px 8px", borderBottom: `1px solid ${G.faint}` }}>
                     <div style={{ fontSize: 14, fontWeight: 800, color: G.text, marginBottom: 4 }}>{wh.name}</div>
                     <div style={{ fontSize: 12, color: G.muted, display: "flex", gap: 6, alignItems: "flex-start" }}>
                       <span>🏠</span><span>{wh.address}</span>
                     </div>
                   </div>
-
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, borderBottom: `1px solid ${G.faint}` }}>
-                    <a href={`tel:${wh.phone}`} style={{
-                      display: "flex", alignItems: "center", gap: 10, padding: "12px 14px",
-                      textDecoration: "none", borderRight: `1px solid ${G.faint}`,
-                      borderBottom: `1px solid ${G.faint}`, background: "rgba(27,107,53,0.02)", cursor: "pointer",
-                    }}>
+                    <a href={`tel:${wh.phone}`} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", textDecoration: "none", borderRight: `1px solid ${G.faint}`, borderBottom: `1px solid ${G.faint}`, background: "rgba(27,107,53,0.02)", cursor: "pointer" }}>
                       <span style={{ fontSize: 22 }}>📞</span>
                       <div>
                         <div style={{ fontSize: 9, color: G.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 3 }}>{tx("call")}</div>
                         <div style={{ fontSize: 14, fontWeight: 800, color: G.green }}>{wh.phone}</div>
                       </div>
                     </a>
-                    <a href={`tel:${wh.helpline}`} style={{
-                      display: "flex", alignItems: "center", gap: 10, padding: "12px 14px",
-                      textDecoration: "none", borderBottom: `1px solid ${G.faint}`,
-                      background: "rgba(27,107,53,0.02)", cursor: "pointer",
-                    }}>
+                    <a href={`tel:${wh.helpline}`} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", textDecoration: "none", borderBottom: `1px solid ${G.faint}`, background: "rgba(27,107,53,0.02)", cursor: "pointer" }}>
                       <span style={{ fontSize: 22 }}>☎️</span>
                       <div>
                         <div style={{ fontSize: 9, color: G.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 3 }}>{tx("helpline")}</div>
@@ -423,7 +347,6 @@ export default function PredictionTab({ profile, activeCrop }) {
                       </div>
                     </div>
                   </div>
-
                   <div style={{ padding: "10px 16px", background: "rgba(27,107,53,0.06)", display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontSize: 20, flexShrink: 0 }}>💡</span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: G.green, lineHeight: 1.6 }}>{tx("tip")}</span>
@@ -436,7 +359,6 @@ export default function PredictionTab({ profile, activeCrop }) {
           <div className="fu s4">
             <MandiComparison barData={barData} bestMandi={myMandis[0]} />
           </div>
-
           <div className="fu s5">
             <MarketSignals />
           </div>
@@ -446,10 +368,7 @@ export default function PredictionTab({ profile, activeCrop }) {
       {!predicted && !loading && (
         <Card style={{ textAlign: "center", padding: "44px 24px" }}>
           <div style={{ fontSize: 42, marginBottom: 10 }}>🌾</div>
-          <div style={{
-            fontFamily: "'Playfair Display',serif", fontSize: 18,
-            fontWeight: 700, color: G.green, marginBottom: 7
-          }}>
+          <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 18, fontWeight: 700, color: G.green, marginBottom: 7 }}>
             Namaste, {profile.name.split(" ")[0]}! Select mandi &amp; days above
           </div>
           <div style={{ fontSize: 12, color: G.muted, maxWidth: 380, margin: "0 auto", lineHeight: 1.7 }}>
@@ -458,10 +377,7 @@ export default function PredictionTab({ profile, activeCrop }) {
           </div>
           <div style={{ display: "flex", justifyContent: "center", gap: 9, marginTop: 16, flexWrap: "wrap" }}>
             {["📈 LSTM Forecast", "📍 Mandi Compare", "🌤 Market Signals", "🏛️ Govt Warehouse"].map(f => (
-              <div key={f} style={{
-                background: G.light, border: `1px solid ${G.bdr}`,
-                borderRadius: 9, padding: "6px 14px", fontSize: 11, color: G.green, fontWeight: 600
-              }}>{f}</div>
+              <div key={f} style={{ background: G.light, border: `1px solid ${G.bdr}`, borderRadius: 9, padding: "6px 14px", fontSize: 11, color: G.green, fontWeight: 600 }}>{f}</div>
             ))}
           </div>
         </Card>
